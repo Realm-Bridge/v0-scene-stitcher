@@ -13,7 +13,7 @@ export function Hero() {
           <span className="text-xs font-medium tracking-wider uppercase text-primary">Foundry VTT v13+ Module</span>
         </div>
 
-        <h1 className="text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+        <h1 className="text-balance font-serif text-5xl font-bold uppercase tracking-widest text-foreground sm:text-6xl lg:text-7xl">
           Scene Stitcher
         </h1>
 

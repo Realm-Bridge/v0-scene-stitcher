@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Orbitron, Montserrat, Fira_Code } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _orbitron = Orbitron({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
+const _montserrat = Montserrat({ subsets: ["latin"] });
+const _firaCode = Fira_Code({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Scene Stitcher — Foundry VTT Module',
