@@ -12,9 +12,6 @@
     "minimum": "13",
     "verified": "13"
   },
-  "system": [
-    "dnd5e"
-  ],
   "esmodules": [
     "scripts/module.mjs"
   ],

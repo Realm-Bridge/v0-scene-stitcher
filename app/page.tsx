@@ -43,7 +43,7 @@ export default function Page() {
       <footer className="border-t border-border py-8">
         <div className="mx-auto max-w-5xl px-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Scene Stitcher is a Foundry VTT v13+ module for D&D 5e. Not affiliated with Foundry Gaming, LLC.
+            Scene Stitcher is a system-agnostic Foundry VTT v13+ module. Not affiliated with Foundry Gaming, LLC.
           </p>
         </div>
       </footer>

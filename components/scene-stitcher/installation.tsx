@@ -84,7 +84,7 @@ export function Installation() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Game System:</span>
-                <span className="font-medium text-foreground">D&D 5e</span>
+                <span className="font-medium text-foreground">Any (system agnostic)</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Permissions:</span>
