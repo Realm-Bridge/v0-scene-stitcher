@@ -1,0 +1,38 @@
+{
+  "SCENE_STITCHER.Title": "Scene Stitcher",
+  "SCENE_STITCHER.ToolbarButton": "Scene Stitcher",
+  "SCENE_STITCHER.ToolbarHint": "Open Scene Stitcher to merge multiple scenes into one",
+
+  "SCENE_STITCHER.StepSelect": "Select Scenes",
+  "SCENE_STITCHER.StepLayout": "Arrange Layout",
+
+  "SCENE_STITCHER.SearchPlaceholder": "Search scenes...",
+  "SCENE_STITCHER.SelectAll": "Select All",
+  "SCENE_STITCHER.DeselectAll": "Deselect All",
+  "SCENE_STITCHER.SelectedCount": "{count} scenes selected",
+  "SCENE_STITCHER.MinScenesWarning": "Select at least 2 scenes to continue.",
+  "SCENE_STITCHER.Next": "Next",
+  "SCENE_STITCHER.Back": "Back",
+
+  "SCENE_STITCHER.SnapX": "Snap X",
+  "SCENE_STITCHER.SnapY": "Snap Y",
+  "SCENE_STITCHER.SnapBoth": "Snap All",
+  "SCENE_STITCHER.FitAll": "Fit All",
+  "SCENE_STITCHER.ZoomIn": "Zoom In",
+  "SCENE_STITCHER.ZoomOut": "Zoom Out",
+
+  "SCENE_STITCHER.MergeButton": "Merge Scenes",
+  "SCENE_STITCHER.MergeConfirmTitle": "Confirm Merge",
+  "SCENE_STITCHER.MergeConfirmContent": "This will create a new merged scene from {count} source scenes. The originals will not be modified. Background files are referenced in-place — if you move or delete the original files later, the merged scene's backgrounds will break.",
+  "SCENE_STITCHER.MergeSceneName": "Merged Scene",
+  "SCENE_STITCHER.MergeInProgress": "Merging scenes...",
+  "SCENE_STITCHER.MergeSuccess": "Successfully created merged scene: {name}",
+  "SCENE_STITCHER.MergeError": "Error merging scenes: {error}",
+
+  "SCENE_STITCHER.GridMismatchWarning": "Warning: Source scenes have different grid settings. The merged scene will use the grid from the first scene.",
+  "SCENE_STITCHER.Dimensions": "{width} x {height}",
+
+  "SCENE_STITCHER.HoverPreviewHint": "Hover over a scene to preview details",
+  "SCENE_STITCHER.ShiftHint": "Hold Shift to disable snapping",
+  "SCENE_STITCHER.CtrlDragHint": "Ctrl+Drag or Middle-Click to pan"
+}

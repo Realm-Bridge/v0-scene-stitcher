@@ -1,0 +1,137 @@
+<div class="scene-stitcher-container">
+  {{!-- Step 1: Scene Selection --}}
+  {{#if (eq step "select")}}
+  <section class="scene-stitcher-select">
+    <header class="scene-stitcher-header">
+      <h2>{{localize "SCENE_STITCHER.StepSelect"}}</h2>
+      <div class="scene-stitcher-search">
+        <input
+          type="text"
+          name="search"
+          placeholder="{{localize 'SCENE_STITCHER.SearchPlaceholder'}}"
+          value="{{searchQuery}}"
+          data-action="search"
+        />
+      </div>
+    </header>
+
+    <div class="scene-stitcher-select-actions">
+      <button type="button" data-action="selectAll" class="scene-stitcher-btn scene-stitcher-btn-sm">
+        {{localize "SCENE_STITCHER.SelectAll"}}
+      </button>
+      <button type="button" data-action="deselectAll" class="scene-stitcher-btn scene-stitcher-btn-sm">
+        {{localize "SCENE_STITCHER.DeselectAll"}}
+      </button>
+      <span class="scene-stitcher-count">{{selectedCount}} selected</span>
+    </div>
+
+    <ul class="scene-stitcher-scene-list">
+      {{#each scenes}}
+      <li class="scene-stitcher-scene-item {{#if selected}}is-selected{{/if}}"
+          data-action="toggleScene"
+          data-scene-id="{{id}}">
+        <div class="scene-stitcher-scene-thumb">
+          {{#if thumbnail}}
+          <img src="{{thumbnail}}" alt="{{name}}" />
+          {{else}}
+          <div class="scene-stitcher-scene-nothumb"></div>
+          {{/if}}
+        </div>
+        <div class="scene-stitcher-scene-info">
+          <strong>{{name}}</strong>
+          <span class="scene-stitcher-scene-dims">{{width}} x {{height}} px</span>
+          {{#if isVideo}}
+          <span class="scene-stitcher-badge">Video</span>
+          {{/if}}
+        </div>
+        <div class="scene-stitcher-scene-check">
+          {{#if selected}}
+          <i class="fas fa-check-circle"></i>
+          {{else}}
+          <i class="far fa-circle"></i>
+          {{/if}}
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+
+    <footer class="scene-stitcher-footer">
+      {{#if (lt selectedCount 2)}}
+      <span class="scene-stitcher-warning">{{localize "SCENE_STITCHER.MinScenesWarning"}}</span>
+      {{/if}}
+      <button type="button"
+              data-action="goToLayout"
+              class="scene-stitcher-btn scene-stitcher-btn-primary"
+              {{#if (lt selectedCount 2)}}disabled{{/if}}>
+        {{localize "SCENE_STITCHER.Next"}}
+      </button>
+    </footer>
+  </section>
+  {{/if}}
+
+  {{!-- Step 2: Layout Canvas --}}
+  {{#if (eq step "layout")}}
+  <section class="scene-stitcher-layout">
+    <header class="scene-stitcher-header">
+      <h2>{{localize "SCENE_STITCHER.StepLayout"}}</h2>
+      <div class="scene-stitcher-toolbar">
+        <div class="scene-stitcher-snap-controls">
+          <button type="button" data-action="toggleSnapX"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm {{#if snapX}}is-active{{/if}}"
+                  title="{{localize 'SCENE_STITCHER.SnapX'}}">
+            X
+          </button>
+          <button type="button" data-action="toggleSnapY"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm {{#if snapY}}is-active{{/if}}"
+                  title="{{localize 'SCENE_STITCHER.SnapY'}}">
+            Y
+          </button>
+          <button type="button" data-action="toggleSnapBoth"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm {{#if snapBoth}}is-active{{/if}}"
+                  title="{{localize 'SCENE_STITCHER.SnapBoth'}}">
+            <i class="fas fa-magnet"></i>
+          </button>
+        </div>
+
+        <div class="scene-stitcher-zoom-controls">
+          <button type="button" data-action="zoomOut"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm"
+                  title="{{localize 'SCENE_STITCHER.ZoomOut'}}">
+            <i class="fas fa-search-minus"></i>
+          </button>
+          <span class="scene-stitcher-zoom-level">{{zoomPercent}}%</span>
+          <button type="button" data-action="zoomIn"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm"
+                  title="{{localize 'SCENE_STITCHER.ZoomIn'}}">
+            <i class="fas fa-search-plus"></i>
+          </button>
+          <button type="button" data-action="fitAll"
+                  class="scene-stitcher-btn scene-stitcher-btn-sm"
+                  title="{{localize 'SCENE_STITCHER.FitAll'}}">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="scene-stitcher-canvas-wrapper">
+      <canvas class="scene-stitcher-canvas"></canvas>
+    </div>
+
+    <div class="scene-stitcher-hints">
+      <span>{{localize "SCENE_STITCHER.ShiftHint"}}</span>
+      <span>{{localize "SCENE_STITCHER.CtrlDragHint"}}</span>
+    </div>
+
+    <footer class="scene-stitcher-footer">
+      <button type="button" data-action="goToSelect" class="scene-stitcher-btn">
+        {{localize "SCENE_STITCHER.Back"}}
+      </button>
+      <button type="button" data-action="merge" class="scene-stitcher-btn scene-stitcher-btn-primary">
+        <i class="fas fa-object-group"></i>
+        {{localize "SCENE_STITCHER.MergeButton"}}
+      </button>
+    </footer>
+  </section>
+  {{/if}}
+</div>

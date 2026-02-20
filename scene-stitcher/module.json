@@ -1,0 +1,32 @@
+{
+  "id": "scene-stitcher",
+  "title": "Scene Stitcher",
+  "description": "Merge multiple split scenes back into a single unified scene with all walls, lights, and objects intact. Supports static images and video backgrounds (MP4, WebM) with zero quality loss.",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Author"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "system": [
+    "dnd5e"
+  ],
+  "esmodules": [
+    "scripts/module.mjs"
+  ],
+  "styles": [
+    "styles/scene-stitcher.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": false
+}
