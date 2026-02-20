@@ -3,6 +3,9 @@
   "title": "Scene Stitcher",
   "description": "Merge multiple split scenes back into a single unified scene with all walls, lights, and objects intact. Supports static images and video backgrounds (MP4, WebM) with zero quality loss.",
   "version": "1.0.0",
+  "manifest": "https://raw.githubusercontent.com/Realm-Bridge/v0-scene-stitcher/main/scene-stitcher/module.json",
+  "download": "https://github.com/Realm-Bridge/v0-scene-stitcher/releases/latest/download/module.zip",
+  "readme": "https://github.com/Realm-Bridge/v0-scene-stitcher/blob/main/README.md",
   "authors": [
     {
       "name": "Author"
