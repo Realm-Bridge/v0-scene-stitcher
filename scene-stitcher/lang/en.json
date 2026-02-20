@@ -1,7 +1,7 @@
 {
   "SCENE_STITCHER.Title": "Scene Stitcher",
   "SCENE_STITCHER.ToolbarButton": "Scene Stitcher",
-  "SCENE_STITCHER.ToolbarHint": "Open Scene Stitcher to merge multiple scenes into one",
+  "SCENE_STITCHER.ToolbarHint": "Scene Stitcher",
 
   "SCENE_STITCHER.StepSelect": "Select Scenes",
   "SCENE_STITCHER.StepLayout": "Arrange Layout",
@@ -21,6 +21,13 @@
   "SCENE_STITCHER.ZoomIn": "Zoom In",
   "SCENE_STITCHER.ZoomOut": "Zoom Out",
 
+  "SCENE_STITCHER.LayerUp": "Move layer up (bring forward)",
+  "SCENE_STITCHER.LayerDown": "Move layer down (send back)",
+  "SCENE_STITCHER.RotateCW": "Rotate 90\u00B0 clockwise",
+  "SCENE_STITCHER.RotateCCW": "Rotate 90\u00B0 counter-clockwise",
+  "SCENE_STITCHER.PreviewButton": "Preview",
+  "SCENE_STITCHER.PreviewTitle": "Merge Preview",
+  "SCENE_STITCHER.ClickSelectHint": "Click a scene to select it for layer/rotation controls",
   "SCENE_STITCHER.MergeButton": "Merge Scenes",
   "SCENE_STITCHER.MergeConfirmTitle": "Confirm Merge",
   "SCENE_STITCHER.MergeConfirmContent": "This will create a new merged scene from {count} source scenes. The originals will not be modified. Background files are referenced in-place — if you move or delete the original files later, the merged scene's backgrounds will break.",

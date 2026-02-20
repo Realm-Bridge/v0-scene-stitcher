@@ -38,6 +38,11 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
       zoomIn: SceneStitcherApp.#onZoomIn,
       zoomOut: SceneStitcherApp.#onZoomOut,
       fitAll: SceneStitcherApp.#onFitAll,
+      layerUp: SceneStitcherApp.#onLayerUp,
+      layerDown: SceneStitcherApp.#onLayerDown,
+      rotateCW: SceneStitcherApp.#onRotateCW,
+      rotateCCW: SceneStitcherApp.#onRotateCCW,
+      preview: SceneStitcherApp.#onPreview,
       merge: SceneStitcherApp.#onMerge,
     },
   };
@@ -165,6 +170,8 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
       onLayoutChange: () => {
         if (this._layoutCanvas) {
           this._zoomPercent = Math.round(this._layoutCanvas.zoom * 100);
+          this._updateZoomDisplay();
+          this._updateSelectedInfo();
         }
       },
     });
@@ -253,7 +260,7 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
       this._layoutCanvas.snapX = this._snapX;
       this._layoutCanvas.render();
     }
-    this.render();
+    this._updateToolbarState();
   }
 
   static #onToggleSnapY(event, target) {
@@ -262,7 +269,7 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
       this._layoutCanvas.snapY = this._snapY;
       this._layoutCanvas.render();
     }
-    this.render();
+    this._updateToolbarState();
   }
 
   static #onToggleSnapBoth(event, target) {
@@ -278,14 +285,14 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
       this._layoutCanvas.snapY = this._snapY;
       this._layoutCanvas.render();
     }
-    this.render();
+    this._updateToolbarState();
   }
 
   static #onZoomIn(event, target) {
     if (this._layoutCanvas) {
       this._layoutCanvas.zoomIn();
       this._zoomPercent = Math.round(this._layoutCanvas.zoom * 100);
-      this.render();
+      this._updateZoomDisplay();
     }
   }
 
@@ -293,7 +300,7 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
     if (this._layoutCanvas) {
       this._layoutCanvas.zoomOut();
       this._zoomPercent = Math.round(this._layoutCanvas.zoom * 100);
-      this.render();
+      this._updateZoomDisplay();
     }
   }
 
@@ -301,8 +308,138 @@ export class SceneStitcherApp extends HandlebarsApplicationMixin(ApplicationV2) 
     if (this._layoutCanvas) {
       this._layoutCanvas.fitAll();
       this._zoomPercent = Math.round(this._layoutCanvas.zoom * 100);
-      this.render();
+      this._updateZoomDisplay();
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // DOM helpers — update toolbar state without re-rendering the whole template
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Update snap button active states and zoom display in the toolbar DOM
+   * without triggering a full Handlebars re-render (which would destroy the canvas).
+   */
+  _updateToolbarState() {
+    const el = this.element;
+    if (!el) return;
+
+    const snapXBtn = el.querySelector('[data-action="toggleSnapX"]');
+    const snapYBtn = el.querySelector('[data-action="toggleSnapY"]');
+    const snapBothBtn = el.querySelector('[data-action="toggleSnapBoth"]');
+
+    if (snapXBtn) snapXBtn.classList.toggle("is-active", this._snapX);
+    if (snapYBtn) snapYBtn.classList.toggle("is-active", this._snapY);
+    if (snapBothBtn) snapBothBtn.classList.toggle("is-active", this._snapX && this._snapY);
+
+    this._updateZoomDisplay();
+  }
+
+  /**
+   * Update only the zoom percentage text in the toolbar.
+   */
+  _updateZoomDisplay() {
+    const el = this.element;
+    if (!el) return;
+    const zoomLabel = el.querySelector(".scene-stitcher-zoom-level");
+    if (zoomLabel) zoomLabel.textContent = `${this._zoomPercent}%`;
+  }
+
+  /**
+   * Update the selected scene info panel without re-rendering.
+   */
+  _updateSelectedInfo() {
+    const el = this.element;
+    if (!el || !this._layoutCanvas) return;
+    const infoEl = el.querySelector("#scene-stitcher-selected-info");
+    if (!infoEl) return;
+
+    const scene = this._layoutCanvas.getSelectedScene();
+    if (scene) {
+      infoEl.innerHTML = `<span class="scene-stitcher-selected-label">
+        <strong>${scene.name}</strong> &mdash;
+        Layer: ${scene.zIndex} | Rotation: ${scene.rotation}\u00B0 |
+        ${scene.width} x ${scene.height} px
+      </span>`;
+    } else {
+      infoEl.innerHTML = `<span class="scene-stitcher-selected-label">No scene selected &mdash; click a scene to select it for layer/rotation controls</span>`;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Layer & rotation action handlers
+  // ---------------------------------------------------------------------------
+
+  static #onLayerUp(event, target) {
+    if (!this._layoutCanvas) return;
+    if (this._layoutCanvas.getSelectedIndex() < 0) {
+      ui.notifications.warn("Select a scene first by clicking on it.");
+      return;
+    }
+    this._layoutCanvas.layerUp();
+    this._updateSelectedInfo();
+  }
+
+  static #onLayerDown(event, target) {
+    if (!this._layoutCanvas) return;
+    if (this._layoutCanvas.getSelectedIndex() < 0) {
+      ui.notifications.warn("Select a scene first by clicking on it.");
+      return;
+    }
+    this._layoutCanvas.layerDown();
+    this._updateSelectedInfo();
+  }
+
+  static #onRotateCW(event, target) {
+    if (!this._layoutCanvas) return;
+    if (this._layoutCanvas.getSelectedIndex() < 0) {
+      ui.notifications.warn("Select a scene first by clicking on it.");
+      return;
+    }
+    this._layoutCanvas.rotate(90);
+    this._updateSelectedInfo();
+  }
+
+  static #onRotateCCW(event, target) {
+    if (!this._layoutCanvas) return;
+    if (this._layoutCanvas.getSelectedIndex() < 0) {
+      ui.notifications.warn("Select a scene first by clicking on it.");
+      return;
+    }
+    this._layoutCanvas.rotate(-90);
+    this._updateSelectedInfo();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Preview
+  // ---------------------------------------------------------------------------
+
+  static #onPreview(event, target) {
+    if (!this._layoutCanvas) return;
+
+    const dataUrl = this._layoutCanvas.generatePreview(1200);
+    if (!dataUrl) {
+      ui.notifications.warn("No scenes to preview.");
+      return;
+    }
+
+    // Open preview in a Foundry dialog
+    new foundry.applications.api.DialogV2({
+      window: {
+        title: game.i18n.localize("SCENE_STITCHER.PreviewTitle"),
+        icon: "fas fa-eye",
+        resizable: true,
+      },
+      position: { width: 700, height: 550 },
+      content: `<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:8px;background:#111120;">
+        <img src="${dataUrl}" style="max-width:100%;max-height:100%;object-fit:contain;border:1px solid rgba(255,255,255,0.1);border-radius:4px;" alt="Merge Preview" />
+      </div>`,
+      buttons: [{
+        action: "close",
+        label: "Close",
+        icon: "fas fa-times",
+      }],
+    }).render({ force: true });
   }
 
   static async #onMerge(event, target) {

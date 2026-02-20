@@ -256,22 +256,25 @@ function collectEmbeddedDocuments(scene, offsetX, offsetY) {
  * @param {Scene} scene - Source scene
  * @param {number} offsetX - X offset in the merged scene
  * @param {number} offsetY - Y offset in the merged scene
+ * @param {number} layoutWidth - Width from the layout canvas (pixel dimensions)
+ * @param {number} layoutHeight - Height from the layout canvas (pixel dimensions)
+ * @param {number} [zIndex=-1000] - Sort order for layering
+ * @param {number} [rotation=0] - Rotation in degrees
  * @returns {Object|null} Tile data object, or null if no background
  */
-function createBackgroundTileData(scene, offsetX, offsetY) {
+function createBackgroundTileData(scene, offsetX, offsetY, layoutWidth, layoutHeight, zIndex = -1000, rotation = 0) {
   const bgSrc = scene.background?.src;
   if (!bgSrc) return null;
-
-  const dims = getScenePixelDimensions(scene);
 
   return {
     texture: { src: bgSrc },
     x: offsetX,
     y: offsetY,
-    width: dims.sceneWidth,
-    height: dims.sceneHeight,
+    width: layoutWidth,
+    height: layoutHeight,
+    rotation: rotation,
     overhead: false,
-    sort: -1000, // Lowest z-index — beneath all other content
+    sort: zIndex,
     hidden: false,
     locked: true, // Lock so GMs don't accidentally move the background
     flags: {
@@ -318,16 +321,12 @@ export async function mergeScenes(sceneLayouts, options = {}) {
     game.i18n.localize("SCENE_STITCHER.MergeSceneName") ||
     "Merged Scene";
 
-  // Compute width/height in grid units for the scene document
-  const gridSize = gridConfig.size || 100;
-  const sceneWidthUnits = Math.ceil(totalWidth / gridSize);
-  const sceneHeightUnits = Math.ceil(totalHeight / gridSize);
-
   // Create the new scene (no background — tiles will serve as backgrounds)
+  // In Foundry v13, Scene width/height are in pixels directly
   const mergedScene = await Scene.create({
     name: sceneName,
-    width: sceneWidthUnits,
-    height: sceneHeightUnits,
+    width: Math.ceil(totalWidth),
+    height: Math.ceil(totalHeight),
     padding: 0,
     grid: gridConfig,
     tokenVision: firstScene.tokenVision ?? true,
@@ -353,8 +352,10 @@ export async function mergeScenes(sceneLayouts, options = {}) {
     const offsetX = layout.x;
     const offsetY = layout.y;
 
-    // Background tile
-    const bgTile = createBackgroundTileData(scene, offsetX, offsetY);
+    // Background tile — use layout dimensions and optional z-order / rotation
+    const zIndex = layout.zIndex ?? (-1000 + i);
+    const rotation = layout.rotation ?? 0;
+    const bgTile = createBackgroundTileData(scene, offsetX, offsetY, layout.width, layout.height, zIndex, rotation);
     if (bgTile) {
       allBackgroundTiles.push(bgTile);
     }

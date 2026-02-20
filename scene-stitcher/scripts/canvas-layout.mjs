@@ -28,6 +28,8 @@ const SNAP_THRESHOLD = 12; // pixels in canvas-space
  * @property {string|null} thumbnail
  * @property {number} x          - Position x in scene-pixel space
  * @property {number} y          - Position y in scene-pixel space
+ * @property {number} zIndex     - Layer order (higher = on top)
+ * @property {number} rotation   - Rotation in degrees
  */
 
 export class LayoutCanvas {
@@ -54,6 +56,7 @@ export class LayoutCanvas {
     this._panning = false;
     this._panStart = { x: 0, y: 0 };
     this._hoveredIndex = -1;
+    this._selectedIndex = -1; // Currently selected scene for layer/rotation controls
 
     // Snap settings
     this.snapX = true;
@@ -87,7 +90,7 @@ export class LayoutCanvas {
     const gap = 20;
     let currentX = gap;
 
-    this.scenes = sceneInfos.map((info) => {
+    this.scenes = sceneInfos.map((info, idx) => {
       const entry = {
         sceneId: info.sceneId ?? info.id,
         name: info.name,
@@ -97,6 +100,8 @@ export class LayoutCanvas {
         thumbnail: info.thumbnail,
         x: currentX,
         y: gap,
+        zIndex: idx,       // Default layer order = selection order
+        rotation: 0,       // No rotation by default
       };
       currentX += info.width + gap;
       return entry;
@@ -122,7 +127,69 @@ export class LayoutCanvas {
       y: s.y,
       width: s.width,
       height: s.height,
+      zIndex: s.zIndex,
+      rotation: s.rotation,
     }));
+  }
+
+  /** Get the currently selected scene index */
+  getSelectedIndex() {
+    return this._selectedIndex;
+  }
+
+  /** Get the currently selected scene entry, or null */
+  getSelectedScene() {
+    return this._selectedIndex >= 0 ? this.scenes[this._selectedIndex] : null;
+  }
+
+  /**
+   * Move the selected scene forward (higher z-index / rendered on top).
+   */
+  layerUp() {
+    if (this._selectedIndex < 0) return;
+    const scene = this.scenes[this._selectedIndex];
+    const maxZ = Math.max(...this.scenes.map(s => s.zIndex));
+    if (scene.zIndex < maxZ) {
+      // Find the scene one layer above and swap
+      const above = this.scenes.find(s => s.zIndex === scene.zIndex + 1);
+      if (above) above.zIndex--;
+      scene.zIndex++;
+    } else {
+      scene.zIndex = maxZ + 1;
+    }
+    this.render();
+    this.onLayoutChange();
+  }
+
+  /**
+   * Move the selected scene backward (lower z-index / rendered behind).
+   */
+  layerDown() {
+    if (this._selectedIndex < 0) return;
+    const scene = this.scenes[this._selectedIndex];
+    const minZ = Math.min(...this.scenes.map(s => s.zIndex));
+    if (scene.zIndex > minZ) {
+      const below = this.scenes.find(s => s.zIndex === scene.zIndex - 1);
+      if (below) below.zIndex++;
+      scene.zIndex--;
+    } else {
+      scene.zIndex = minZ - 1;
+    }
+    this.render();
+    this.onLayoutChange();
+  }
+
+  /**
+   * Rotate the selected scene by the given degrees.
+   * @param {number} degrees
+   */
+  rotate(degrees) {
+    if (this._selectedIndex < 0) return;
+    const scene = this.scenes[this._selectedIndex];
+    scene.rotation = (scene.rotation + degrees) % 360;
+    if (scene.rotation < 0) scene.rotation += 360;
+    this.render();
+    this.onLayoutChange();
   }
 
   /**
@@ -237,8 +304,11 @@ export class LayoutCanvas {
     // Draw snap guides
     this._drawSnapGuides(ctx);
 
-    // Draw scenes
-    for (let i = 0; i < this.scenes.length; i++) {
+    // Draw scenes sorted by zIndex (lowest first = furthest back)
+    const sortedIndices = this.scenes
+      .map((s, i) => i)
+      .sort((a, b) => this.scenes[a].zIndex - this.scenes[b].zIndex);
+    for (const i of sortedIndices) {
       this._drawScene(ctx, this.scenes[i], i);
     }
 
@@ -313,13 +383,27 @@ export class LayoutCanvas {
   _drawScene(ctx, scene, index) {
     const isHovered = index === this._hoveredIndex;
     const isDragging = this._dragging?.index === index;
+    const isSelected = index === this._selectedIndex;
+
+    ctx.save();
+
+    // Apply rotation around the scene's centre
+    if (scene.rotation) {
+      const cx = scene.x + scene.width / 2;
+      const cy = scene.y + scene.height / 2;
+      ctx.translate(cx, cy);
+      ctx.rotate((scene.rotation * Math.PI) / 180);
+      ctx.translate(-cx, -cy);
+    }
 
     // Background fill
     ctx.fillStyle = isDragging
       ? "rgba(79, 209, 197, 0.15)"
-      : isHovered
-        ? "rgba(79, 209, 197, 0.08)"
-        : "rgba(255, 255, 255, 0.05)";
+      : isSelected
+        ? "rgba(168, 85, 247, 0.12)"
+        : isHovered
+          ? "rgba(79, 209, 197, 0.08)"
+          : "rgba(255, 255, 255, 0.05)";
     ctx.fillRect(scene.x, scene.y, scene.width, scene.height);
 
     // Draw the thumbnail / background image if loaded
@@ -331,30 +415,38 @@ export class LayoutCanvas {
     // Border
     ctx.strokeStyle = isDragging
       ? "#4fd1c5"
-      : isHovered
-        ? "#63b3ed"
-        : "rgba(255, 255, 255, 0.3)";
-    ctx.lineWidth = (isDragging ? 3 : isHovered ? 2 : 1) / this.zoom;
+      : isSelected
+        ? "#a855f7"
+        : isHovered
+          ? "#63b3ed"
+          : "rgba(255, 255, 255, 0.3)";
+    ctx.lineWidth = (isDragging || isSelected ? 3 : isHovered ? 2 : 1) / this.zoom;
     ctx.strokeRect(scene.x, scene.y, scene.width, scene.height);
 
     // Label
     const fontSize = Math.max(14, 16 / this.zoom);
     ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.textBaseline = "top";
 
-    // Label background
-    const text = scene.name;
-    const metrics = ctx.measureText(text);
+    // Label text: name + layer info + rotation info
+    let labelText = scene.name;
+    const extraInfo = [];
+    extraInfo.push(`L:${scene.zIndex}`);
+    if (scene.rotation) extraInfo.push(`${scene.rotation}\u00B0`);
+    if (extraInfo.length) labelText += ` [${extraInfo.join(" ")}]`;
+
+    const metrics = ctx.measureText(labelText);
     const labelPad = 4 / this.zoom;
     const labelH = fontSize + labelPad * 2;
     const labelW = metrics.width + labelPad * 2;
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillStyle = isSelected ? "rgba(168, 85, 247, 0.85)" : "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(scene.x, scene.y, labelW, labelH);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-    ctx.fillText(text, scene.x + labelPad, scene.y + labelPad);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.fillText(labelText, scene.x + labelPad, scene.y + labelPad);
+
+    ctx.restore();
   }
 
   // ---------------------------------------------------------------------------
@@ -620,9 +712,17 @@ export class LayoutCanvas {
       return;
     }
 
-    // Left-click to drag a scene
+    // Left-click to select and drag a scene
     if (e.button === 0) {
       const index = this._hitTest(cx, cy);
+      // Update selection
+      const prevSelected = this._selectedIndex;
+      this._selectedIndex = index;
+      if (index !== prevSelected) {
+        this.render();
+        this.onLayoutChange(); // Notify app so it can update layer/rotation controls
+      }
+
       if (index >= 0) {
         const scene = this.scenes[index];
         const scenePos = this._canvasToScene(cx, cy);
@@ -718,6 +818,82 @@ export class LayoutCanvas {
 
     const delta = -Math.sign(e.deltaY) * ZOOM_STEP;
     this._setZoom(this.zoom + delta, cx, cy);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Preview — render a clean composite at a given scale
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Generate a preview image of the merged layout as a data URL.
+   * Renders all scenes (sorted by zIndex) at the given scale, without UI chrome.
+   * @param {number} [maxDim=1024] - Max width or height of the preview image
+   * @returns {string|null} Data URL of the preview PNG, or null if no scenes
+   */
+  generatePreview(maxDim = 1024) {
+    if (this.scenes.length === 0) return null;
+
+    // Compute bounding box
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const s of this.scenes) {
+      minX = Math.min(minX, s.x);
+      minY = Math.min(minY, s.y);
+      maxX = Math.max(maxX, s.x + s.width);
+      maxY = Math.max(maxY, s.y + s.height);
+    }
+    const contentW = maxX - minX;
+    const contentH = maxY - minY;
+    if (contentW <= 0 || contentH <= 0) return null;
+
+    const scale = Math.min(maxDim / contentW, maxDim / contentH, 1);
+    const pw = Math.ceil(contentW * scale);
+    const ph = Math.ceil(contentH * scale);
+
+    const offscreen = document.createElement("canvas");
+    offscreen.width = pw;
+    offscreen.height = ph;
+    const ctx = offscreen.getContext("2d");
+
+    // Dark background
+    ctx.fillStyle = "#111120";
+    ctx.fillRect(0, 0, pw, ph);
+
+    ctx.save();
+    ctx.scale(scale, scale);
+    ctx.translate(-minX, -minY);
+
+    // Draw scenes sorted by zIndex
+    const sorted = [...this.scenes].sort((a, b) => a.zIndex - b.zIndex);
+    for (const scene of sorted) {
+      ctx.save();
+      if (scene.rotation) {
+        const cx = scene.x + scene.width / 2;
+        const cy = scene.y + scene.height / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((scene.rotation * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
+
+      // Fill background
+      ctx.fillStyle = "rgba(30, 30, 50, 1)";
+      ctx.fillRect(scene.x, scene.y, scene.width, scene.height);
+
+      // Draw image if available
+      const img = this._imageCache.get(scene.sceneId);
+      if (img?.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, scene.x, scene.y, scene.width, scene.height);
+      }
+
+      // Thin border
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+      ctx.lineWidth = 2 / scale;
+      ctx.strokeRect(scene.x, scene.y, scene.width, scene.height);
+
+      ctx.restore();
+    }
+
+    ctx.restore();
+    return offscreen.toDataURL("image/png");
   }
 
   // ---------------------------------------------------------------------------
