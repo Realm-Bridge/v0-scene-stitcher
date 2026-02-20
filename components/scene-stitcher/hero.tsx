@@ -25,13 +25,13 @@ export function Hero() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a
             href="#installation"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/85"
           >
             Get Started
           </a>
           <a
             href="#how-it-works"
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-6 py-3 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-6 py-3 text-sm font-semibold text-secondary-foreground transition-colors hover:border-primary/50"
           >
             How It Works
           </a>
@@ -76,7 +76,7 @@ function WorkflowDiagram() {
       </div>
 
       {/* Arrow */}
-      <div className="flex items-center text-primary">
+      <div className="flex items-center text-accent">
         <svg width="32" height="16" viewBox="0 0 32 16" fill="none" className="sm:w-10">
           <path d="M0 8H28M28 8L22 2M28 8L22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

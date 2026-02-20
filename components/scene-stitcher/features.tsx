@@ -51,10 +51,10 @@ export function Features() {
     <section id="features" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-6">
         <div className="text-center">
-          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-balance font-serif text-3xl font-bold uppercase tracking-widest text-foreground sm:text-4xl">
             Features
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-primary">
             Built for the specific challenge of reassembling split maps in Foundry VTT.
           </p>
         </div>
@@ -63,9 +63,9 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/30"
+              className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40"
             >
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md bg-accent/10 text-accent">
                 <feature.icon className="h-4.5 w-4.5" />
               </div>
               <h3 className="mb-2 text-sm font-semibold text-foreground">

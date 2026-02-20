@@ -15,10 +15,10 @@ export function EmbeddedTypes() {
     <section id="embedded-types" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-6">
         <div className="text-center">
-          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Supported Embedded Documents
+          <h2 className="text-balance font-serif text-3xl font-bold uppercase tracking-widest text-foreground sm:text-4xl">
+            Embedded Documents
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-primary">
             Every embedded document type in Foundry VTT v13 is handled. Coordinates are
             offset to their correct position in the merged scene.
           </p>
@@ -43,7 +43,7 @@ export function EmbeddedTypes() {
                     }`}
                   >
                     <td className="px-4 py-3">
-                      <code className="rounded bg-secondary px-1.5 py-0.5 text-xs font-mono font-medium text-primary">
+                      <code className="rounded bg-secondary px-1.5 py-0.5 text-xs font-mono font-medium text-accent">
                         {doc.name}
                       </code>
                     </td>

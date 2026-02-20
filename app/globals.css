@@ -7,8 +7,8 @@
    Background:    #141422 (deep navy-purple)
    Panel/Card:    #1e1e32 (slightly lighter panel)
    Border:        #2a2a44 (subtle divider)
-   Realm Blue:    #22d3ee (teal/cyan primary)
-   Realm Purple:  #a855f7 (rich purple accent)
+   Realm Purple:  #a855f7 (primary brand colour — headings, labels, borders)
+   Realm Blue:    #22d3ee (teal/cyan — action buttons, toggles, interactive)
    Panel Grey:    #6b7280
    Text:          #e2e2ef (off-white with cool tint)
    Muted Text:    #8888a0
@@ -24,33 +24,33 @@
   --card-foreground: #e2e2ef;
   --popover: #1e1e32;
   --popover-foreground: #e2e2ef;
-  --primary: #22d3ee;
-  --primary-foreground: #141422;
+  --primary: #a855f7;
+  --primary-foreground: #e2e2ef;
   --secondary: #1e1e32;
   --secondary-foreground: #c8c8d8;
   --muted: #1e1e32;
   --muted-foreground: #8888a0;
-  --accent: #a855f7;
+  --accent: #22d3ee;
   --accent-foreground: #141422;
   --destructive: #ef4444;
   --destructive-foreground: #ef4444;
   --border: #2a2a44;
   --input: #2a2a44;
-  --ring: #22d3ee;
-  --chart-1: #22d3ee;
-  --chart-2: #a855f7;
+  --ring: #a855f7;
+  --chart-1: #a855f7;
+  --chart-2: #22d3ee;
   --chart-3: #22c55e;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
   --radius: 0.5rem;
   --sidebar: #1a1a2e;
   --sidebar-foreground: #e2e2ef;
-  --sidebar-primary: #22d3ee;
-  --sidebar-primary-foreground: #141422;
-  --sidebar-accent: #a855f7;
+  --sidebar-primary: #a855f7;
+  --sidebar-primary-foreground: #e2e2ef;
+  --sidebar-accent: #22d3ee;
   --sidebar-accent-foreground: #141422;
   --sidebar-border: #2a2a44;
-  --sidebar-ring: #22d3ee;
+  --sidebar-ring: #a855f7;
 }
 
 .dark {
@@ -60,32 +60,32 @@
   --card-foreground: #e8e8f0;
   --popover: #1a1a2e;
   --popover-foreground: #e8e8f0;
-  --primary: #22d3ee;
-  --primary-foreground: #111120;
+  --primary: #a855f7;
+  --primary-foreground: #e8e8f0;
   --secondary: #1a1a2e;
   --secondary-foreground: #c8c8d8;
   --muted: #1a1a2e;
   --muted-foreground: #8888a0;
-  --accent: #a855f7;
+  --accent: #22d3ee;
   --accent-foreground: #111120;
   --destructive: #dc2626;
   --destructive-foreground: #ef4444;
   --border: #262640;
   --input: #262640;
-  --ring: #22d3ee;
-  --chart-1: #22d3ee;
-  --chart-2: #a855f7;
+  --ring: #a855f7;
+  --chart-1: #a855f7;
+  --chart-2: #22d3ee;
   --chart-3: #22c55e;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
   --sidebar: #151528;
   --sidebar-foreground: #e8e8f0;
-  --sidebar-primary: #22d3ee;
-  --sidebar-primary-foreground: #111120;
-  --sidebar-accent: #a855f7;
+  --sidebar-primary: #a855f7;
+  --sidebar-primary-foreground: #e8e8f0;
+  --sidebar-accent: #22d3ee;
   --sidebar-accent-foreground: #111120;
   --sidebar-border: #262640;
-  --sidebar-ring: #22d3ee;
+  --sidebar-ring: #a855f7;
 }
 
 @theme inline {
