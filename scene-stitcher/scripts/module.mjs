@@ -34,46 +34,29 @@ Hooks.once("ready", () => {
 /**
  * Add the Scene Stitcher button to the Scene controls toolbar.
  *
- * Foundry v13 uses getSceneControlButtons which receives the controls array.
+ * Foundry v13 passes a Record<string, SceneControl> object (not an array).
+ * We add our tool to the "tokens" control group which is always present.
  */
 Hooks.on("getSceneControlButtons", (controls) => {
-  // Only GMs should be able to merge scenes
-  if (!game.user.isGM) return;
+  // In v13, controls is a Record keyed by control group name.
+  // "tokens" is the default active control group (the token layer).
+  const group = controls.tokens;
+  if (!group) return;
 
-  // Find the scenes control group (the "token" group is the default scene control)
-  const sceneTools = controls.find((c) => c.name === "scenes");
-  if (!sceneTools) {
-    // Fallback: try to find the token controls or any control group
-    const tokenTools = controls.find((c) => c.name === "token");
-    if (tokenTools) {
-      tokenTools.tools.push(_createToolButton());
-    }
-    return;
-  }
-
-  sceneTools.tools.push(_createToolButton());
-});
-
-/* -------------------------------------------------------------------------- */
-/*  Helpers                                                                   */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Create the tool button configuration.
- */
-function _createToolButton() {
-  return {
+  group.tools[MODULE_ID] = {
     name: MODULE_ID,
-    title: game.i18n.localize("SCENE_STITCHER.ToolbarHint"),
-    icon: "fas fa-puzzle-piece",
+    title: "SCENE_STITCHER.ToolbarHint",
+    icon: "fa-solid fa-puzzle-piece",
     button: true,
-    onClick: () => {
+    visible: game.user.isGM,
+    order: 100,
+    onChange: () => {
       if (appInstance?.rendered) {
         appInstance.bringToFront();
       } else {
         appInstance = new SceneStitcherApp();
-        appInstance.render(true);
+        appInstance.render({ force: true });
       }
     },
   };
-}
+});
